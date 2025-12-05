@@ -3,12 +3,17 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 exports.handler = async function(event, context) {
   const username = event.queryStringParameters.username;
 
-  if (!username) {
-    return { statusCode: 400, body: JSON.stringify({ error: "Username required" }) };
-  }
+  if (!html.includes(username)) {
+  return { statusCode: 200, body: JSON.stringify({ status: "not_found" }) };
+} else {
+  return { statusCode: 200, body: JSON.stringify({ status: "normal" }) };
+}
+
 
   try {
     const profileRes = await fetch(`https://www.threads.net/@${username}`);
+const html = await profileRes.text();
+
 if (profileRes.status === 404) {
     return { statusCode: 200, body: JSON.stringify({ status: "not_found" }) };
 } else {
@@ -32,4 +37,5 @@ if (profileRes.status === 404) {
     return { statusCode: 500, body: JSON.stringify({ error: "Failed to fetch data." }) };
   }
 };
+
 
