@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Threads Shadowban Checker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-md bg-gray-800 p-6 rounded-xl shadow-lg">
+    <h1 class="text-2xl font-bold text-center mb-4">Threads Shadowban Checker</h1>
+    <input id="usernameInput" type="text" placeholder="Enter Threads username..."
+           class="w-full p-3 rounded-lg mb-4 bg-gray-700 border border-gray-600">
+    <button onclick="checkShadowban()"
+            class="w-full bg-blue-500 hover:bg-blue-600 p-3 rounded-lg font-semibold">Check Status</button>
+    <div id="result" class="mt-6 text-center text-lg font-semibold"></div>
+  </div>
+
+  <script>
+    async function checkShadowban() {
+      const username = document.getElementById("usernameInput").value.trim();
+      const resultBox = document.getElementById("result");
+
+      if (!username) {
+        resultBox.innerHTML = "❗ Please enter a username.";
+        return;
+      }
+
+      resultBox.innerHTML = "⏳ Checking...";
+
+      try {
+        const res = await fetch(`/.netlify/functions/check?username=${username}`);
+        const data = await res.json();
+
+        if (data.status === "not_found") resultBox.innerHTML = "⚠️ Account not found.";
+        else if (data.status === "possibly_shadowbanned") resultBox.innerHTML = "🔴 Possibly Shadowbanned.";
+        else resultBox.innerHTML = "🟢 No issues detected.";
+      } catch (err) {
+        resultBox.innerHTML = "⚠️ Error checking account.";
+      }
+    }
+  </script>
+</body>
+</html>
